@@ -1,4 +1,5 @@
 // @todo: Темплейт карточки
+const cardTemplate = document.querySelector('#card-template').content;
 
 // @todo: DOM узлы
 const content = document.querySelector('.content');
@@ -6,16 +7,18 @@ const placesList = content.querySelector('.places__list');
 
 // @todo: Функция создания карточки
 
-function addCard() {
-  const cardTemplate = document.querySelector('#card-template').content;
-  const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
+function createCard(cards) {
+  cards.forEach(card => {
+    const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
 
-  cardElement.querySelector('.card__title').textContent = 'Hello, World!';
-
-  placesList.append(cardElement);
+    cardElement.querySelector('.card__image').src = card.link;
+    cardElement.querySelector('.card__title').textContent = card.name;
+  
+    placesList.append(cardElement);
+  });
 }
 
-addCard();
+createCard(initialCards);
 
 // @todo: Функция удаления карточки
 
