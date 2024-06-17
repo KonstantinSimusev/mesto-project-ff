@@ -1,4 +1,4 @@
-import { cardTemplate } from "../../index.js";
+import { cardTemplate } from "../index.js";
 
 // @todo: Функция создания карточки
 export function createCard(cardInfo, deleteCard) {

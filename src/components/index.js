@@ -1,6 +1,6 @@
-import './pages/index.css';
-import { createCard, deleteCard } from './components/card/card.js';
-import { initialCards } from './components/cards/cards.js';
+import '../pages/index.css';
+import { createCard, deleteCard } from './card/card.js';
+import { initialCards } from './cards/cards.js';
 
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector("#card-template").content;
