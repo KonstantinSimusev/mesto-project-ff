@@ -1,3 +1,3 @@
 # Проектная работа Mesto
 
-### https://github.com/KonstantinSimusev/mesto-project-ff.git
+https://github.com/KonstantinSimusev/mesto-project-ff.git
