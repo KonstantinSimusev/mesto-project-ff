@@ -1,15 +1,15 @@
-import { modals } from './index.js'
+import { modals } from './index.js';
 
 // @todo: Переменные
 const modalOpenClass = 'popup_is-opened';
-const closeKey = 'escape';
+const closeKey = 'Escape';
 
 // @todo: Функция открытия модального окна
 function openModal(button, modal) {
   button.addEventListener('click', () => {
     addClass(modal);
     document.addEventListener('keydown', closeModalWithKey);
-    modal.addEventListener('click', closeModalWithClick)
+    modal.addEventListener('click', closeModalWithClick);
   });
 };
 
@@ -25,9 +25,9 @@ function closeModal(button, modal) {
 // @todo: Функция закрытия модального окна нажатием на Esc
 function closeModalWithKey(evt) {
   modals.forEach(modal => {
-    if (evt.key.toLowerCase() === closeKey)
+    if (evt.key === closeKey)
       removeClass(modal);
-  });   
+  });
 }
 
 // @todo: Функция закрытия модального окна кликом на оверлей
@@ -48,4 +48,4 @@ function removeClass(element) {
   element.classList.remove(modalOpenClass);
 }
 
-export { openModal, closeModal }
+export { openModal, closeModal, removeClass }
