@@ -1,51 +1,45 @@
-import { modals } from './index.js';
-
 // @todo: Переменные
 const modalOpenClass = 'popup_is-opened';
 const closeKey = 'Escape';
 
 // @todo: Функция открытия модального окна
-function openModal(button, modal) {
-  button.addEventListener('click', () => {
-    addClass(modal);
-    document.addEventListener('keydown', closeModalWithKey);
-    modal.addEventListener('click', closeModalWithClick);
-  });
-};
+function openModal(element) {
+  element.classList.add(modalOpenClass);
+  document.addEventListener('keydown', closeModalWithKey);
+}
 
 // @todo: Функция закрытия модального окна 
-function closeModal(button, modal) {
-  button.addEventListener('click', () => {
-    removeClass(modal);
-    document.removeEventListener('keydown', closeModalWithKey);
-    modal.removeEventListener('click', closeModalWithClick)
-  });
-};
+function closeModal(element) {
+  element.classList.remove(modalOpenClass);
+  document.removeEventListener('keydown', closeModalWithKey);
+}
 
-// @todo: Функция закрытия модального окна нажатием на Esc
-function closeModalWithKey(evt) {
-  modals.forEach(modal => {
-    if (evt.key === closeKey)
-      removeClass(modal);
+// @todo: Функция закрытия модального окна кнопкой 'Крестик'
+function closeModalWithCrossButton(modal) {
+  modal.addEventListener('click', evt => {
+    if (evt.target.classList.contains('popup__close'))
+      closeModal(modal);
   });
 }
 
 // @todo: Функция закрытия модального окна кликом на оверлей
-function closeModalWithClick(evt) {
-  modals.forEach(modal => {
-    if (evt.target === modal)
-      removeClass(modal);
-  });   
+function closeModalWithOverlayClick(modal) {
+  modal.addEventListener('click', evt => {
+    if (evt.target === evt.currentTarget)
+      closeModal(modal);
+  });
 }
 
-// @todo: Функция добавления класса
-function addClass(element) {
-  element.classList.add(modalOpenClass);
+// @todo: Функция закрытия модального окна нажатием на Esc
+function closeModalWithKey(evt) {
+  if (evt.key === closeKey)
+    closeModal(modal);
 }
 
-// @todo: Функция удаления класса
-function removeClass(element) {
-  element.classList.remove(modalOpenClass);
+export {
+  openModal,
+  closeModal,
+  closeModalWithOverlayClick,
+  closeModalWithCrossButton,
+  closeModalWithKey,
 }
-
-export { openModal, closeModal, removeClass }

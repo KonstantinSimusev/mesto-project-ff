@@ -1,12 +1,12 @@
 import '../pages/index.css';
-import { showCards } from './card.js';
+import { createCard, toggleLike, deleteCard } from './card.js';
 import { initialCards } from './cards.js';
-import { openModal, closeModal } from './modal.js';
 import {
-  handleEditFormSubmit,
-  handleCardFormSubmit,
-  insertTextInEditForm,
-} from './form.js';
+  openModal,
+  closeModal,
+  closeModalWithOverlayClick,
+  closeModalWithCrossButton,
+} from './modal.js';
 
 // @todo: DOM узлы
 const profileTitle = document.querySelector('.profile__title');
@@ -18,10 +18,6 @@ const cardAddButton = document.querySelector('.profile__add-button');
 const editModal = document.querySelector('.popup_type_edit');
 const cardAddModal = document.querySelector('.popup_type_new-card');
 const imageModal = document.querySelector('.popup_type_image');
-
-const editModalCloseButton = document.querySelector('.popap__edit-button_close');
-const cardAddModalCloseButton = document.querySelector('.popap__add-button_close');
-const imageModalCloseButton = document.querySelector('.popap__image-button_close');
 
 const editForm = document.querySelector('.form_type_edit');
 const nameInput = document.querySelector('.popup__input_type_name');
@@ -36,19 +32,74 @@ const placesList = document.querySelector('.places__list');
 const modalImage = document.querySelector('.popup__image');
 const modalCaption = document.querySelector('.popup__caption');
 
-// @todo: Переменные
-const modals = [editModal, cardAddModal, imageModal];
+const modals = document.querySelectorAll('.popup');
 
 // @todo: Вывести карточки на экран
-showCards(initialCards, imageModal, placesList);
+initialCards.forEach(card => {
+  const newCard = createCard(card, toggleLike, openFullImage, deleteCard);
+  placesList.append(newCard);
+});
+
+// @todo: Открыть модальное окно карточки
+function openFullImage(cardInfo) {
+  modalImage.src = cardInfo.link;
+  modalImage.alt = 'На фото ' + cardInfo.name;
+  modalCaption.textContent = cardInfo.name;
+  openModal(imageModal);
+}
 
 // @todo: Открыть модальное окно
-openModal(editButton, editModal);
-openModal(cardAddButton, cardAddModal);
+editButton.addEventListener('click', () => {
+  openModal(editModal);
+});
 
-// @todo: Закрыть модальное окно
-closeModal(editModalCloseButton, editModal);
-closeModal(cardAddModalCloseButton, cardAddModal);
+cardAddButton.addEventListener('click', () => {
+  openModal(cardAddModal);
+});
+
+// @todo: Закрыть модальное окно по кнопке 'Крестик'
+modals.forEach(modal => {
+  closeModalWithCrossButton(modal);
+});
+
+// @todo: Закрыть модальное окно кликом на оверлей
+modals.forEach(modal => {
+  closeModalWithOverlayClick(modal);
+});
+
+// @todo: Функция обработки формы для редактирования профиля
+function handleEditFormSubmit(evt) {
+  evt.preventDefault();
+  insertTextInProfile();
+  closeModal(editModal);
+}
+
+// @todo: Функция обработки формы для создания новой карточки
+function handleCardFormSubmit(evt) {
+  evt.preventDefault();
+
+  const card = {};
+  card.name = cardNameInput.value;
+  card.link = urlInput.value;
+
+  const createdCard = createCard(card, toggleLike, openFullImage, deleteCard);
+  placesList.prepend(createdCard);
+
+  closeModal(cardAddModal);
+  cardForm.reset();
+}
+
+// @todo: Функция вставки информации в форму для редактирования профиля
+function insertTextInEditForm() {
+  nameInput.value = profileTitle.textContent;
+  descriptionInput.value = profileDescription.textContent;
+}
+
+// @todo: Функция вставки информации в профиль контента
+function insertTextInProfile() {
+  profileTitle.textContent = nameInput.value;
+  profileDescription.textContent = descriptionInput.value;
+}
 
 // @todo: Вставить имя и информации о себе в форму для редактирования
 editButton.addEventListener('click', insertTextInEditForm);
@@ -56,22 +107,3 @@ editButton.addEventListener('click', insertTextInEditForm);
 // @todo: Обработать форму
 editForm.addEventListener('submit', handleEditFormSubmit);
 cardForm.addEventListener('submit', handleCardFormSubmit);
-
-
-export {
-  profileTitle,
-  profileDescription,
-  nameInput,
-  descriptionInput,
-  modals,
-  editModal,
-  cardAddModal,
-  modalImage,
-  modalCaption,
-  imageModal,
-  imageModalCloseButton,
-  cardForm,
-  cardNameInput,
-  urlInput,
-  placesList,
-}
