@@ -14,32 +14,25 @@ function closeModal(element) {
   document.removeEventListener('keydown', closeModalWithKey);
 }
 
-// @todo: Функция закрытия модального окна кнопкой 'Крестик'
-function closeModalWithCrossButton(modal) {
+// @todo: Функция закрытия модального окна (кнопка 'Крестик', клик по оверлею)
+function closeModalOptional(modal) {
   modal.addEventListener('click', evt => {
-    if (evt.target.classList.contains('popup__close'))
-      closeModal(modal);
-  });
-}
-
-// @todo: Функция закрытия модального окна кликом на оверлей
-function closeModalWithOverlayClick(modal) {
-  modal.addEventListener('click', evt => {
-    if (evt.target === evt.currentTarget)
+    if (evt.target.classList.contains('popup__close') || 
+      evt.target.classList.contains('popup'))
       closeModal(modal);
   });
 }
 
 // @todo: Функция закрытия модального окна нажатием на Esc
 function closeModalWithKey(evt) {
-  if (evt.key === closeKey)
+  if (evt.key === closeKey) {
+    const modal = document.querySelector('.popup_is-opened');
     closeModal(modal);
+  }
 }
 
 export {
   openModal,
   closeModal,
-  closeModalWithOverlayClick,
-  closeModalWithCrossButton,
-  closeModalWithKey,
+  closeModalOptional,
 }

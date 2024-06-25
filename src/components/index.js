@@ -4,8 +4,7 @@ import { initialCards } from './cards.js';
 import {
   openModal,
   closeModal,
-  closeModalWithOverlayClick,
-  closeModalWithCrossButton,
+  closeModalOptional,
 } from './modal.js';
 
 // @todo: DOM узлы
@@ -50,6 +49,7 @@ function openFullImage(cardInfo) {
 
 // @todo: Открыть модальное окно
 editButton.addEventListener('click', () => {
+  insertTextInEditForm();
   openModal(editModal);
 });
 
@@ -57,14 +57,9 @@ cardAddButton.addEventListener('click', () => {
   openModal(cardAddModal);
 });
 
-// @todo: Закрыть модальное окно по кнопке 'Крестик'
+// @todo: Закрыть модальное окно (опционально)
 modals.forEach(modal => {
-  closeModalWithCrossButton(modal);
-});
-
-// @todo: Закрыть модальное окно кликом на оверлей
-modals.forEach(modal => {
-  closeModalWithOverlayClick(modal);
+  closeModalOptional(modal);
 });
 
 // @todo: Функция обработки формы для редактирования профиля
@@ -100,9 +95,6 @@ function insertTextInProfile() {
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = descriptionInput.value;
 }
-
-// @todo: Вставить имя и информации о себе в форму для редактирования
-editButton.addEventListener('click', insertTextInEditForm);
 
 // @todo: Обработать форму
 editForm.addEventListener('submit', handleEditFormSubmit);
