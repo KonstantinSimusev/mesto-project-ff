@@ -6,6 +6,7 @@ import {
   closeModal,
   closeModalOptional,
 } from './modal.js';
+import { enableValidation, clearValidation } from './validation.js';
 
 // @todo: DOM узлы
 const profileTitle = document.querySelector('.profile__title');
@@ -21,10 +22,12 @@ const imageModal = document.querySelector('.popup_type_image');
 const editForm = document.querySelector('.form_type_edit');
 const nameInput = document.querySelector('.popup__input_type_name');
 const descriptionInput = document.querySelector('.popup__input_type_description');
+const editFormInputs = editForm.querySelectorAll('.popup__input');
 
 const cardForm = document.querySelector('.form_type_new-card');
 const cardNameInput = document.querySelector('.popup__input_type_card-name');
 const urlInput = document.querySelector('.popup__input_type_url');
+const cardFormInputs = cardForm.querySelectorAll('.popup__input');
 
 const placesList = document.querySelector('.places__list');
 
@@ -32,6 +35,17 @@ const modalImage = document.querySelector('.popup__image');
 const modalCaption = document.querySelector('.popup__caption');
 
 const modals = document.querySelectorAll('.popup');
+
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible',
+}
+
+enableValidation(validationConfig);
 
 // @todo: Вывести карточки на экран
 initialCards.forEach(card => {
@@ -51,10 +65,18 @@ function openFullImage(cardInfo) {
 editButton.addEventListener('click', () => {
   insertTextInEditForm();
   openModal(editModal);
+
+  editFormInputs.forEach(inputElement => {
+    clearValidation(editForm, inputElement);
+  });
 });
 
 cardAddButton.addEventListener('click', () => {
   openModal(cardAddModal);
+
+  cardFormInputs.forEach(inputElement => {
+    clearValidation(cardForm, inputElement);
+  });
 });
 
 // @todo: Закрыть модальное окно (опционально)
@@ -81,6 +103,7 @@ function handleCardFormSubmit(evt) {
   placesList.prepend(createdCard);
 
   closeModal(cardAddModal);
+
   cardForm.reset();
 }
 
@@ -99,14 +122,3 @@ function insertTextInProfile() {
 // @todo: Обработать форму
 editForm.addEventListener('submit', handleEditFormSubmit);
 cardForm.addEventListener('submit', handleCardFormSubmit);
-
-
-fetch('https://nomoreparties.co/v1/wff-cohort-18/cards', {
-  headers: {
-    authorization: 'ff161c49-24fc-438f-b635-5dff7fb5cccd'
-  }
-})
-  .then(res => res.json())
-  .then((result) => {
-    console.log(result);
-  });

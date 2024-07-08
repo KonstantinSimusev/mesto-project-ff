@@ -3,14 +3,14 @@ const modalOpenClass = 'popup_is-opened';
 const closeKey = 'Escape';
 
 // @todo: Функция открытия модального окна
-function openModal(element) {
-  element.classList.add(modalOpenClass);
+function openModal(modal) {
+  modal.classList.add(modalOpenClass);
   document.addEventListener('keydown', closeModalWithKey);
 }
 
 // @todo: Функция закрытия модального окна 
-function closeModal(element) {
-  element.classList.remove(modalOpenClass);
+function closeModal(modal) {
+  modal.classList.remove(modalOpenClass);
   document.removeEventListener('keydown', closeModalWithKey);
 }
 
