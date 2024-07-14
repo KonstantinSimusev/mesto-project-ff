@@ -21,8 +21,8 @@
       <main class="content">
         <section class="profile page__section">
           <img
-            src="<%=require('./images/avatar.jpg')%>"
-            alt="Аватарка"
+            src=""
+            alt=""
             class="profile__image"
           />
           <div class="profile__info">
@@ -57,6 +57,8 @@
                 placeholder="Имя"
                 minlength="2"
                 maxlength="40"
+                pattern="^[а-яА-ЯёЁa-zA-Z\s\-]+$"
+                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
                 required
               />
               <span class="form__input-error name-input-error"></span>
@@ -70,6 +72,8 @@
                 placeholder="Занятие"
                 minlength="2"
                 maxlength="200"
+                pattern="^[а-яА-ЯёЁa-zA-Z\s\-]+$"
+                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
                 required
               />
               <span class="form__input-error description-input-error"></span>
@@ -93,6 +97,9 @@
                 id="place-name-input"
                 placeholder="Название"
                 minlength="2"
+                maxlength="30"
+                pattern="^[а-яА-ЯёЁa-zA-Z\s\-]+$"
+                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
                 required
               />
               <span class="form__input-error place-name-input-error"></span>
@@ -114,6 +121,39 @@
           </form>
         </div>
       </div>
+      <div class="popup popup_type_avatar popup_is-animated">
+        <div class="popup__content">
+          <button type="button" class="popup__close"></button>
+          <h3 class="popup__title">Обновить аватар</h3>
+          <form class="popup__form form_type_avatar" name="avatar">
+            <label class="form__field">
+              <input
+                type="url"
+                name="avatar"
+                class="popup__input popup__input_type_avatar"
+                id="avatar-input"
+                placeholder="Ссылка на картинку"
+                required
+              />
+              <span class="form__input-error avatar-input-error"></span>
+            </label>
+            <button type="submit" class="button popup__button">
+              Сохранить
+            </button>
+          </form>
+        </div>
+      </div>
+      <div class="popup popup_type_delete popup_is-animated">
+        <div class="popup__content">
+          <button type="button" class="popup__close"></button>
+          <h3 class="popup__title">Вы уверены?</h3>
+          <form class="popup__form form_type_delete" name="delete">
+            <button type="submit" class="button popup__button popup__button_delete">
+              Да
+            </button>
+          </form>
+        </div>
+      </div>
       <div class="popup popup_type_image popup_is-animated">
         <div class="popup__content popup__content_content_image">
           <button type="button" class="popup__close"></button>
@@ -129,7 +169,10 @@
         <button type="button" class="card__delete-button"></button>
         <div class="card__description">
           <h2 class="card__title"></h2>
-          <button type="button" class="card__like-button"></button>
+          <div class="like-container">
+            <button type="button" class="card__like-button"></button>
+            <span class="card__like-button_quantity"></span>
+          </div>
         </div>
       </li>
     </template>

@@ -5,9 +5,15 @@
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
-  background: url('../../../images/avatar.jpg');
-  background-position: center;
-  background-size: cover;
+  /* background-image: url('../../../images/avatar.jpg'); */
+  object-position: center;
+  object-fit: cover;
+  transition: filter .3s ease;
+}
+
+.profile__image:hover {
+  cursor: url(../../../images/edit-icon.svg), default;
+  filter: brightness(.2);
 }
 
 @media screen and (max-width: 740px) {
