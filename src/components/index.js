@@ -5,13 +5,12 @@ import {
   patchAvatarInfo,
   patchUserInfo,
   postNewCard,
-  putCardLike,
-  deleteCardLike,
-  deleteCard,
+  changeLike,
+  deleteCard 
 } from './api.js';
 import { enableValidation, clearValidation } from './validation.js';
 import { createCard } from './card.js';
-import { openModal, closeModal, closeModalOptional } from './modal.js';
+import { openModal, closeModal, addCloseModalOptionalListener } from './modal.js';
 
 // @todo: DOM узлы
 const profileImage = document.querySelector('.profile__image');
@@ -20,7 +19,6 @@ const profileDescription = document.querySelector('.profile__description');
 
 const avatarForm = document.querySelector('.form_type_avatar');
 const avatarUrlInput = document.querySelector('.popup__input_type_avatar');
-const avatarFormInputs = avatarForm.querySelectorAll('.popup__input');
 
 const editButton = document.querySelector('.profile__edit-button');
 const cardAddButton = document.querySelector('.profile__add-button');
@@ -33,12 +31,10 @@ const imageModal = document.querySelector('.popup_type_image');
 const editForm = document.querySelector('.form_type_edit');
 const nameInput = document.querySelector('.popup__input_type_name');
 const descriptionInput = document.querySelector('.popup__input_type_description');
-const editFormInputs = editForm.querySelectorAll('.popup__input');
 
 const cardForm = document.querySelector('.form_type_new-card');
 const cardNameInput = document.querySelector('.popup__input_type_card-name');
 const urlInput = document.querySelector('.popup__input_type_url');
-const cardFormInputs = cardForm.querySelectorAll('.popup__input');
 
 const placesList = document.querySelector('.places__list');
 
@@ -46,12 +42,11 @@ const modalImage = document.querySelector('.popup__image');
 const modalCaption = document.querySelector('.popup__caption');
 
 const modals = document.querySelectorAll('.popup');
-const saveButtons = document.querySelectorAll('.popup__button');
 
-// @todo: Переменные
+// @todo: Информация о пользователе
 let userInfo = {};
-let cardsInfo = [];
 
+// @todo: Настройки валидации
 const validationConfig = {
   formSelector: '.popup__form',
   inputSelector: '.popup__input',
@@ -63,24 +58,13 @@ const validationConfig = {
 
 // @todo: Функции
 
-// @todo: Функция загрузки рендеринга
-function renderLoading(isLoading) {
-  if (isLoading) {
-    setButtons(saveButtons, 'Сохранение...')
-  } else {
-    setButtons(saveButtons, 'Сохранить')
-  }
+// @todo: Функция ожидания загрузки
+const renderLoading = (isLoading, button) => {
+  button.textContent = isLoading ? 'Сохранение...' : 'Сохранить';
 };
 
-// @todo: Функция установки кнопки загрузки
-function setButtons(buttons, value) {
-  buttons.forEach(button => {
-    button.textContent = value;
-  })
-}
-
 // @todo: Функция открытия модального окна карточки
-function openFullImage(cardInfo) {
+const openFullImage = (cardInfo) => {
   modalImage.src = cardInfo.link;
   modalImage.alt = 'На фото ' + cardInfo.name;
   modalCaption.textContent = cardInfo.name;
@@ -88,17 +72,12 @@ function openFullImage(cardInfo) {
   openModal(imageModal);
 }
 
-// @todo: Функция очистки полей формы
-function clearInputs(form, inputs) {
-  inputs.forEach(input => {
-    clearValidation(form, input, validationConfig);
-  })
-}
-
 // @todo: Функция обработки формы для редактирования аватарки
-function handleAvatarFormSubmit(evt) {
+const handleAvatarFormSubmit = (evt) => {
   evt.preventDefault();
-  renderLoading(true);
+
+  let submitter = evt.submitter;
+  renderLoading(true, submitter);
   
   patchAvatarInfo(avatarUrlInput.value)
     .then(user => {
@@ -109,16 +88,18 @@ function handleAvatarFormSubmit(evt) {
       console.log(error);
     })
     .finally(() => {
-      renderLoading(false);
+      renderLoading(false, submitter);
     })
 
   closeModal(avatarEditModal);
 }
 
 // @todo: Функция обработки формы для редактирования профиля
-function handleEditFormSubmit(evt) {
+const handleEditFormSubmit = (evt) => {
   evt.preventDefault();
-  renderLoading(true);
+
+  let submitter = evt.submitter;
+  renderLoading(true, submitter);
 
   patchUserInfo(nameInput.value, descriptionInput.value)
     .then(user => {
@@ -129,27 +110,29 @@ function handleEditFormSubmit(evt) {
       console.log(error);
     })
     .finally(() => {
-      renderLoading(false);
+      renderLoading(false, submitter);
     })
 
   closeModal(editModal);
 }
 
 // @todo: Функция обработки формы для создания новой карточки
-function handleCardFormSubmit(evt) {
+const handleCardFormSubmit = (evt) => {
   evt.preventDefault();
-  renderLoading(true);
+
+  let submitter = evt.submitter;
+  renderLoading(true, submitter);
 
   postNewCard(cardNameInput.value, urlInput.value)
     .then(cardInfo => {
-      const createdCard = createCard(cardInfo, openFullImage, putCardLike, deleteCardLike, deleteCard, userInfo);
+      const createdCard = createCard(cardInfo, openFullImage, changeLike, deleteCard, userInfo);
       placesList.prepend(createdCard);
     })
     .catch(error => {
       console.log(error);
     })
     .finally(() => {
-      renderLoading(false);
+      renderLoading(false, submitter);
     })
 
   closeModal(cardAddModal);
@@ -157,13 +140,13 @@ function handleCardFormSubmit(evt) {
 }
 
 // @todo: Функция вставки информации в форму для редактирования профиля
-function insertTextInEditForm() {
+const insertTextInEditForm = () => {
   nameInput.value = profileTitle.textContent;
   descriptionInput.value = profileDescription.textContent;
 }
 
 // @todo: Функция вставки информации в форму для аватарки
-function insertUrlInAvatarForm() {
+const insertUrlInAvatarForm = () => {
   avatarUrlInput.value = profileImage.src;
 }
 
@@ -172,17 +155,16 @@ function insertUrlInAvatarForm() {
 // @todo: Загрузить профиль пользователя и карточки
 Promise
   .all([getUserInfo(), getInitialCards()])
-    .then(promises => {
-      userInfo = promises[0];
-      cardsInfo = promises[1];
+    .then(responses => {
+      userInfo = responses[0];
 
       profileTitle.textContent = userInfo.name;
       profileDescription.textContent = userInfo.about;
       profileImage.src = userInfo.avatar;
       profileImage.alt = 'На фото ' + userInfo.about;
 
-      cardsInfo.forEach(cardInfo => {
-        const newCard = createCard(cardInfo, openFullImage, putCardLike, deleteCardLike, deleteCard, userInfo);
+      responses[1].forEach(cardInfo => {
+        const newCard = createCard(cardInfo, openFullImage, changeLike, deleteCard, userInfo);
         placesList.append(newCard);
       });
     });
@@ -193,24 +175,24 @@ enableValidation(validationConfig);
 // @todo: Открыть модальное окно
 editButton.addEventListener('click', () => {
   insertTextInEditForm();
-  clearInputs(editForm, editFormInputs, validationConfig);
+  clearValidation(editForm, validationConfig);
   openModal(editModal);
 });
 
 cardAddButton.addEventListener('click', () => {
-  clearInputs(cardForm, cardFormInputs, validationConfig);
+  clearValidation(cardForm, validationConfig);
   openModal(cardAddModal);
 });
 
 profileImage.addEventListener('click', () => {
   insertUrlInAvatarForm();
-  clearInputs(avatarForm, avatarFormInputs, validationConfig);
+  clearValidation(avatarForm, validationConfig);
   openModal(avatarEditModal);
 });
 
 // @todo: Закрыть модальное окно (опционально)
 modals.forEach(modal => {
-  closeModalOptional(modal);
+  addCloseModalOptionalListener(modal);
 });
 
 // @todo: Обработать форму

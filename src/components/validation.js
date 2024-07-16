@@ -1,5 +1,5 @@
 // @todo: Функция, которая добавляет класс с ошибкой
-function showInputError(formElement, inputElement, errorMessage, validationConfig) {
+const showInputError = (formElement, inputElement, errorMessage, validationConfig) => {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
 
   inputElement.classList.add(validationConfig.inputErrorClass);
@@ -7,8 +7,8 @@ function showInputError(formElement, inputElement, errorMessage, validationConfi
   errorElement.classList.add(validationConfig.errorClass);
 }
 
-// @todo: Функция очистки ошибок валидации
-function clearValidation(formElement, inputElement, validationConfig) {
+// @todo: Функция, которая удаляет класс с ошибкой
+const hideInputError = (formElement, inputElement, validationConfig) => {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
 
   inputElement.classList.remove(validationConfig.inputErrorClass);
@@ -16,8 +16,19 @@ function clearValidation(formElement, inputElement, validationConfig) {
   errorElement.textContent = '';
 }
 
+// @todo: Функция очистки ошибок валидации
+const clearValidation = (formElement, validationConfig) => {
+  const inputElements = formElement.querySelectorAll(validationConfig.inputSelector);
+  const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
+  
+  inputElements.forEach(inputElement => {
+    hideInputError(formElement, inputElement, validationConfig);
+    toggleButtonStatte(inputElement, buttonElement, validationConfig);
+  })
+}
+
 // @todo: Функция валидации
-function checkInputValidity(formElement, inputElement, validationConfig) {
+const checkInputValidity = (formElement, inputElement, validationConfig) => {
   if (inputElement.validity.patternMismatch)
     inputElement.setCustomValidity(inputElement.dataset.errorMessage);
   else
@@ -26,19 +37,17 @@ function checkInputValidity(formElement, inputElement, validationConfig) {
   if (!inputElement.validity.valid)
     showInputError(formElement, inputElement, inputElement.validationMessage, validationConfig);
   else
-    clearValidation(formElement, inputElement, validationConfig);
+    clearValidation(formElement, validationConfig);
 }
 
 // @todo: Функция проверки поля на ошибку
-function hasInvalidInput(inputList) {
-  return inputList.some(inputElement => {
-    return !inputElement.validity.valid;
-  })
+const hasInvalidInput = (inputElement) => {
+  return !inputElement.validity.valid;
 }
 
 // @todo: Функция включения и отключения кнопки
-function toggleButtonStatte(inputList, buttonElement, validationConfig) {
-  if (hasInvalidInput(inputList)) {
+const toggleButtonStatte = (inputElement, buttonElement, validationConfig) => {
+  if (hasInvalidInput(inputElement)) {
     buttonElement.disabled = true;
     buttonElement.classList.add(validationConfig.inactiveButtonClass);
   } else {
@@ -48,22 +57,18 @@ function toggleButtonStatte(inputList, buttonElement, validationConfig) {
 }
 
 // @todo: Функция слушателя событий полей
-function setEventListeners(formElement, validationConfig) {
+const setEventListeners = (formElement, validationConfig) => {
   const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
-  const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
-
-  toggleButtonStatte(inputList, buttonElement, validationConfig);
 
   inputList.forEach(inputElement => {
     inputElement.addEventListener('input', () => {
       checkInputValidity(formElement, inputElement, validationConfig);
-      toggleButtonStatte(inputList, buttonElement, validationConfig);
     });
   });
 }
 
 // @todo: Функция активации валидации
-function enableValidation(validationConfig) {
+const enableValidation = (validationConfig) => {
   const formList = Array.from(document.querySelectorAll(validationConfig.formSelector));
   formList.forEach(formElement => {
     formElement.addEventListener('submit', evt => {
@@ -75,5 +80,5 @@ function enableValidation(validationConfig) {
 
 export {
   enableValidation,
-  clearValidation,
+  clearValidation
 }

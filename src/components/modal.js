@@ -1,21 +1,28 @@
-// @todo: Переменные
+// @todo: Класс, который открывает модальное окно
 const modalOpenClass = 'popup_is-opened';
-const closeKey = 'Escape';
 
 // @todo: Функция открытия модального окна
-function openModal(modal) {
+const openModal = (modal) => {
   modal.classList.add(modalOpenClass);
   document.addEventListener('keydown', closeModalWithKey);
 }
 
 // @todo: Функция закрытия модального окна 
-function closeModal(modal) {
+const closeModal = (modal) => {
   modal.classList.remove(modalOpenClass);
   document.removeEventListener('keydown', closeModalWithKey);
 }
 
-// @todo: Функция закрытия модального окна (кнопка 'Крестик', клик по оверлею)
-function closeModalOptional(modal) {
+// @todo: Функция закрытия модального окна нажатием на Esc
+const closeModalWithKey = (evt) => {
+  if (evt.key === 'Escape') {
+    const modal = document.querySelector('.popup_is-opened');
+    closeModal(modal);
+  }
+}
+
+// @todo: Функция установки слушателя закрытия модального окна
+const addCloseModalOptionalListener = (modal) => {
   modal.addEventListener('click', evt => {
     if (evt.target.classList.contains('popup__close') || 
       evt.target.classList.contains('popup'))
@@ -23,16 +30,8 @@ function closeModalOptional(modal) {
   });
 }
 
-// @todo: Функция закрытия модального окна нажатием на Esc
-function closeModalWithKey(evt) {
-  if (evt.key === closeKey) {
-    const modal = document.querySelector('.popup_is-opened');
-    closeModal(modal);
-  }
-}
-
 export {
   openModal,
   closeModal,
-  closeModalOptional,
+  addCloseModalOptionalListener
 }
