@@ -5,7 +5,7 @@ const isActiveLikeClass = 'card__like-button_is-active';
 const cardTemplate = document.querySelector('#card-template').content;
 
 // @todo: Функция создания карточки
-export const createCard = (cardInfo, openFullImage, changeLike, deleteCard, userInfo) => {
+export const createCard = (cardInfo, openFullImage, changeLike, openDeleteModal, userInfo) => {
   const card = cardTemplate.querySelector('.places__item').cloneNode(true);
   const cardImage = card.querySelector('.card__image');
   const cardTitle = card.querySelector('.card__title');
@@ -26,7 +26,7 @@ export const createCard = (cardInfo, openFullImage, changeLike, deleteCard, user
   });
 
   deleteButton.addEventListener('click', () => {
-    deleteCard(card, cardInfo._id);
+    openDeleteModal(card, cardInfo._id);
   });
 
   likeButton.addEventListener('click', evt => {
